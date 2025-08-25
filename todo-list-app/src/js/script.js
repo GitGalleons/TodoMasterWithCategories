@@ -1,28 +1,27 @@
-const TaskItem = require('./taskItem');
+// filepath: g:\DEBORAJ ROY\Downloads\TodoMasterWithCategories\todo-list-app\src\utils\storage.js
+import { saveTasks, getTasks } from '../utils/storage.js';
+// If you have a taskItem module, import it like this:
+// import TaskItem from './taskItem.js';
 
 const taskInput = document.getElementById("taskInput");
 const categoryInput = document.getElementById("categoryInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskList = document.getElementById("taskList");
-const categoryFilter = document.getElementById("categoryFilter");
 
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let tasks = getTasks();
 
-function renderTasks(filterCategory = "") {
+function renderTasks() {
   taskList.innerHTML = "";
-  const filteredTasks = filterCategory ? tasks.filter(task => task.category === filterCategory) : tasks;
-
-  filteredTasks.forEach((task, index) => {
-    const taskItem = new TaskItem(task.text, task.category, task.completed);
+  tasks.forEach((task, index) => {
     const li = document.createElement("li");
-    li.className = `task ${taskItem.completed ? "completed" : ""}`;
+    li.className = `task ${task.completed ? "completed" : ""}`;
     li.draggable = true;
 
     li.innerHTML = `
-      <span>${taskItem.text} <span class="category">[${taskItem.category}]</span></span>
+      <span>${task.text} <span class="category">[${task.category}]</span></span>
       <div>
-        <button onclick="toggleComplete(${index})">✓</button>
-        <button onclick="deleteTask(${index})">🗑</button>
+        <button data-action="toggle" data-index="${index}">✓</button>
+        <button data-action="delete" data-index="${index}">🗑</button>
       </div>
     `;
 
@@ -35,13 +34,13 @@ function renderTasks(filterCategory = "") {
     });
 
     li.addEventListener("drop", (e) => {
-      const draggedIndex = e.dataTransfer.getData("index");
+      const draggedIndex = +e.dataTransfer.getData("index");
       reorderTasks(draggedIndex, index);
     });
 
     taskList.appendChild(li);
   });
-  localStorage.setItem("tasks", JSON.stringify(tasks));
+  saveTasks(tasks);
 }
 
 function addTask() {
@@ -49,7 +48,7 @@ function addTask() {
   const category = categoryInput.value;
   if (!text) return;
 
-  tasks.push(new TaskItem(text, category, false));
+  tasks.push({ text, category, completed: false });
   taskInput.value = "";
   renderTasks();
 }
@@ -70,14 +69,13 @@ function reorderTasks(from, to) {
   renderTasks();
 }
 
-function filterTasks() {
-  const selectedCategory = categoryFilter.value;
-  renderTasks(selectedCategory);
-}
+taskList.addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const idx = Number(btn.dataset.index);
+  if (btn.dataset.action === 'toggle') toggleComplete(idx);
+  if (btn.dataset.action === 'delete') deleteTask(idx);
+});
 
 addTaskBtn.addEventListener("click", addTask);
-categoryFilter.addEventListener("change", filterTasks);
-window.addEventListener("load", () => {
-  renderTasks();
-  categoryFilter.value = ""; // Reset filter on load
-});
+window.addEventListener("load", renderTasks);
