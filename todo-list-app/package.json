@@ -1,0 +1,32 @@
+{
+  "name": "todo-list-app",
+  "version": "1.0.0",
+  "description": "A To-Do List application with categories, drag-and-drop sorting, and improved user interface.",
+  "main": "src/js/script.js",
+  "scripts": {
+    "start": "live-server src",
+    "build": "echo 'Build step not defined'",
+    "test": "echo 'No tests defined'"
+  },
+  "keywords": [
+    "todo",
+    "task",
+    "list",
+    "categories",
+    "drag-and-drop"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "live-server": "^1.2.1"
+  },
+  "devDependencies": {},
+  "homepage": "https://github.com/yourusername/todo-list-app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/todo-list-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/todo-list-app/issues"
+  }
+}
